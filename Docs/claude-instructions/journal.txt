@@ -1,0 +1,191 @@
+# S-Pankki Raportoinnin Kehittäminen – Journal
+
+**Projekti:** S-Pankki – Raportoinnin kehittäminen (Vaihe 1)
+**Aikataulu:** Joulukuu 2025 – Tammikuu 2026
+**Konsultti:** Jussi Varis / GoLive Ventures Oy
+**Viimeisin päivitys:** 11.12.2025
+
+---
+
+## PROJEKTIN NYKYTILA
+
+### Vaihe: Esivalmistelu / Työkalujen pystytys (ennen kickoffia)
+
+| Osa-alue | Status | Huomiot |
+|----------|--------|---------|
+| SQLite-tietokanta | ✅ Toimii | MCP-serveri konfiguroitu, 78 kenttää + 45 koodia |
+| MAPE-kenttämäppäys | ✅ v0.4 valmis | Gap-analyysi tehty, 34 OK / 15 LOGIC / 17 INVESTIGATE / 12 MISSING |
+| MAPE-koodilistat | ✅ Täytetty | 12 listaa (01-19), Visa IPM -mäppäysvihjeet mukana |
+| SQL VIEW:t | ✅ Luotu | v_master_mapping, v_gap_summary, v_action_items |
+| Claude-ohjeet | ✅ Päivitetty | sqlite_database_guide.md v1.1 |
+| CESOP-mäppäys | ⏳ Odottaa | Taulu luotu, data täytettävänä |
+| Visa IPM -kentät | ⏳ Odottaa | Taulu luotu, BASE II Matrix täytettävänä |
+| Kickoff | ⏳ Odottaa | Aikataulu sovittava S-Pankin kanssa |
+| Card DW -dokumentaatio | ⏳ Odottaa | Saadaan Crosskeyltä/S-Pankilta |
+
+---
+
+## SESSIOHISTORIA
+
+---
+### 2025-12-10: SQLite MCP -tietokannan pystytys
+
+**Tehty:**
+- SQLite MCP-serverin asennus ja konfigurointi Claude Desktopille
+- Tietokannan luonti: spankki_mapping.db
+- 4 taulua: mape_field_mapping, mape_code_lists, visa_ipm_fields, cesop_field_mapping
+- MAPE-kenttämäppäyksen tuonti (78 kenttää, 7 tietuetyyppiä)
+- MAPE-koodilistojen tuonti (45 arvoa, 12 listaa)
+- 3 SQL VIEW:tä gap-analyysiin
+
+**Tuotokset:**
+- spankki_mapping.db
+- Docs/claude-instructions/sqlite_database_guide.md (v1.1)
+- Docs/analysis/mape_visa_ipm_mapping_v0.4.md
+- Docs/analysis/mape_koodilistat_pikaohje.md
+
+**Keskeiset havainnot:**
+- MCP-paketti: mcp-server-sqlite-npx (ei @modelcontextprotocol/server-sqlite)
+- Windows vaatii cmd-wrapperin konfiguraatiossa
+- Useat UPDATE-lauseet samassa kutsussa → vain ensimmäinen suoritetaan!
+- VIEW:t parempi kuin master-taulut (ei redundanssia)
+
+**Lessons Learned:**
+- Tietokannan arkkitehtuuri: käytä VIEW:jä eikä master-tauluja
+- Yksi päivityspaikka → VIEW:t päivittyvät automaattisesti
+
+---
+### 2025-12-11: Dokumentaation viimeistely ja Journal
+
+**Tehty:**
+- sqlite_database_guide.md päivitetty v1.1
+- Arkkitehtuurikuva lisätty ohjeeseen
+- Git commit ja push GitHubiin
+- Journal.txt luotu
+
+**Commit:** 3486a2c - "Add SQLite database and documentation"
+
+---
+
+## SEURAAVAT VAIHEET
+
+### Välittömästi (ennen kickoffia)
+
+| # | Tehtävä | Prioriteetti | Arvio |
+|---|---------|--------------|-------|
+| 1 | Täytä visa_ipm_fields BASE II Field Matrixista | Korkea | 30 min |
+| 2 | Lisää mandatory/data_type MAPE-kenttiin | Keskitaso | 20 min |
+| 3 | Täytä cesop_field_mapping | Keskitaso | 30 min |
+| 4 | Kickoff-esityksen valmistelu (PPTX) | Korkea | 2h |
+
+### Kickoffin jälkeen (Vaihe 1 varsinainen työ)
+
+| # | Tehtävä | Kuvaus |
+|---|---------|--------|
+| 1 | Card DW -dokumentaation analysointi | Kun saadaan Crosskeyltä |
+| 2 | Tietokannan päivitys Card DW -tiedoilla | card_dw_field, card_dw_table, etl_status |
+| 3 | Gap-analyysin viimeistely | INVESTIGATE → OK/MISSING |
+| 4 | ETL-muutosehdotusten laatiminen | Puuttuvat kentät |
+| 5 | CESOP-analyysi | Sama prosessi kuin MAPE |
+
+---
+
+## AVOIMET KYSYMYKSET
+
+| # | Kysymys | Kenelle | Status |
+|---|---------|---------|--------|
+| 1 | Kickoffin ajankohta? | S-Pankki (Marketta/Linda) | Odottaa |
+| 2 | Card DW -dokumentaatio? | Crosskey/S-Pankki | Odottaa |
+| 3 | ETL-kuvaukset? | S-Pankki | Odottaa |
+| 4 | Sopimuksen vastuurajoitukset? | S-Pankki (juridinen) | Odottaa |
+| 5 | DORA-vaatimusten scope (BYOD vs workstation)? | S-Pankki | Odottaa |
+
+---
+
+## KEHITYSTEHTÄVÄT (Infrastruktuuri ja Työkalut)
+
+### Korkea prioriteetti
+
+| # | Tehtävä | Kuvaus | Status |
+|---|---------|--------|--------|
+| 1 | **visa_ipm_fields-taulun täyttö** | BASE II Field Matrix → tietokantaan (~100 kenttää) | ⏳ Seuraava |
+| 2 | **cesop_field_mapping-taulun täyttö** | CESOP XSD + tiivistelmä → tietokantaan | ⏳ Odottaa |
+| 3 | **v_master_mapping VIEW:n laajentaminen** | Kun CESOP-data tulee, VIEW yhdistää automaattisesti | ⏳ Odottaa |
+
+### Keskitaso prioriteetti
+
+| # | Tehtävä | Kuvaus | Status |
+|---|---------|--------|--------|
+| 4 | **mapping_logic-taulun luonti** | Mäppäyssäännöt: "VIP 22 = 07 → C1 (contactless)" | 💡 Suunniteltu |
+| 5 | **validation_rules-taulun luonti** | Tarkistussäännöt ennen raportointia | 💡 Suunniteltu |
+| 6 | **Tietokannan varmuuskopiointi** | Automatisoitu backup GitHubiin | 💡 Harkittava |
+
+### Matala prioriteetti / Tulevaisuus
+
+| # | Tehtävä | Kuvaus | Status |
+|---|---------|--------|--------|
+| 7 | **COREP/FINREP-taulujen lisäys** | Jos projekti laajenee | 💭 Mahdollinen |
+| 8 | **Web-käyttöliittymä tietokantaan** | Helpompi datan selaus | 💭 Mahdollinen |
+| 9 | **Automaattinen XML-generointi** | Tietokannasta → MAPE XML | 💭 Mahdollinen |
+
+### Dokumentaatio
+
+| # | Tehtävä | Kuvaus | Status |
+|---|---------|--------|--------|
+| D1 | **process_guide.md päivitys** | Lisää tietokantaohjeet | ⏳ Tarvittaessa |
+| D2 | **system_prompt.md päivitys** | Viittaus tietokantaan | ⏳ Tarvittaessa |
+| D3 | **README.md päivitys** | Tietokannan kuvaus | ✅ Tehty (osittain) |
+
+### Connectorit ja Integraatiot
+
+| # | Tehtävä | Kuvaus | Status |
+|---|---------|--------|--------|
+| C1 | **SQLite MCP** | Toimii | ✅ Valmis |
+| C2 | **Desktop Commander** | Toimii (tiedostot, git) | ✅ Valmis |
+| C3 | **GitHub Zapier** | Toimii (issuet, commitit) | ✅ Valmis |
+| C4 | **PDF Tools** | Tarkistettava | 💡 Tarvittaessa |
+
+---
+
+## GAP-ANALYYSIN YHTEENVETO (Tietokannasta)
+
+MAPE-kenttien status (78 kpl):
+- OK: 34 kenttää (44%) - Suora mäppäys Visa IPM:stä
+- LOGIC_NEEDED: 15 kenttää (19%) - Vaatii transformaatiologiikkaa
+- INVESTIGATE: 17 kenttää (22%) - Odottaa Card DW -dokumentaatiota
+- MISSING: 12 kenttää (15%) - Ei saatavilla korttitapahtumista
+
+Kriittisimmät puutteet:
+- ACCO (tilitiedot): 8/8 MISSING - tulee toisista järjestelmistä
+- CARD: 5/9 INVESTIGATE - tarvitaan Card DW / BIN-taulu
+- HPAY: 6/25 INVESTIGATE - eniten selvitettävää
+
+---
+
+## TIETOKANNAN NYKYTILA
+
+**Sijainti:** C:\Users\Jussi\ClaudeProjektit\S-Pankki\spankki_mapping.db
+**MCP-serveri:** sqlite-spankki (Claude Desktop)
+
+| Taulu/VIEW | Rivejä | Status |
+|------------|--------|--------|
+| mape_field_mapping | 78 | ✅ Täytetty |
+| mape_code_lists | 45 | ✅ Täytetty |
+| visa_ipm_fields | 0 | ⏳ Täytettävänä |
+| cesop_field_mapping | 0 | ⏳ Täytettävänä |
+| v_master_mapping | (view) | ✅ Toimii |
+| v_gap_summary | (view) | ✅ Toimii |
+| v_action_items | (view) | ✅ Toimii |
+
+---
+
+## GIT-HISTORIA (viimeisimmät)
+
+| Commit | Päivämäärä | Kuvaus |
+|--------|------------|--------|
+| 3486a2c | 10.12.2025 | Add SQLite database and documentation |
+
+---
+
+*Tämä Journal päivitetään jokaisen session lopussa.*
+*Sijainti: Docs/claude-instructions/journal.txt*
